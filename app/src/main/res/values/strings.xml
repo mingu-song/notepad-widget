@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Notepad Widget</string>
+    <string name="config_head_hint">Title</string>
+    <string name="config_body_hint">Here is contents.</string>
+    <string name="config_ok">SAVE</string>
+    <string name="check_body_empty">Please insert note contents.</string>
+    <string name="error">Error!! Please restart or reinstall the application.</string>
+    <string name="no_widget">There are no widgets. Please make a widget.</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-8039042765632689/4939840458</string>
+</resources>

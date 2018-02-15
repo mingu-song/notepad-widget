@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">메모장위젯</string>
+    <string name="check_body_empty">메모장 내용을 입력해 주세요.</string>
+    <string name="config_body_hint">메모장 내용</string>
+    <string name="config_head_hint">제목</string>
+    <string name="config_ok">저장</string>
+    <string name="error">문제가 발생하여 재실행하거나 다시 설치해주세요.</string>
+    <string name="no_widget">메모장이 없습니다. 위젯을 만들어 주세요.</string>
+</resources>
