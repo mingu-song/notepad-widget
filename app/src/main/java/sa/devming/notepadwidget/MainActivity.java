@@ -14,6 +14,7 @@ import sa.devming.notepadwidget.db.Notepad;
 import sa.devming.notepadwidget.db.NotepadDbHelper;
 import sa.devming.notepadwidget.widget.NotepadConfig;
 
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -29,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mEmpty = (TextView)findViewById(R.id.emptyList);
-        mWidgetList = (ListView)findViewById(R.id.widgetList);
+        mEmpty = findViewById(R.id.emptyList);
+        mWidgetList = findViewById(R.id.widgetList);
         mWidgetList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -78,8 +79,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void adMob(){
-        AdView mAdView = (AdView)findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdView mAdView = findViewById(R.id.adView);
+        Bundle extras = new Bundle();
+        extras.putString("max_ad_content_rating", "G");
+        AdRequest adRequest = new AdRequest.Builder()
+                .addNetworkExtrasBundle(AdMobAdapter.class, extras)
+                .build();
         mAdView.loadAd(adRequest);
     }
 }
