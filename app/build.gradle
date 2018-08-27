@@ -7,8 +7,8 @@ android {
         applicationId "sa.devming.notepadwidget"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 108
-        versionName "1.0.8"
+        versionCode 109
+        versionName "1.0.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -28,4 +28,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.1'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
     testImplementation 'junit:junit:4.12'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
