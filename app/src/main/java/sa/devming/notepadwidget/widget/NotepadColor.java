@@ -47,7 +47,7 @@ public class NotepadColor extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.widget_config_color_layout, container, false);
-        ListView colorLV = (ListView)v.findViewById(R.id.colorLV);
+        ListView colorLV = v.findViewById(R.id.colorLV);
         String[] sample = new String[] { "Sample", "Sample", "Sample", "Sample", "Sample", "Sample", "Sample", "Sample", "Sample"};
         ArrayList<String> arrayList = new ArrayList();
         arrayList.addAll(Arrays.asList(sample));
@@ -55,7 +55,7 @@ public class NotepadColor extends DialogFragment {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                TextView tv = (TextView) view.findViewById(R.id.colorItem);
+                TextView tv = view.findViewById(R.id.colorItem);
                 tv.setBackground(ContextCompat.getDrawable(mContext, NotepadProvider.WIDGET_BACKGROUND[position]));
                 tv.setTextColor(NotepadProvider.WIDGET_TEXT_COLOR[position]);
                 return view;

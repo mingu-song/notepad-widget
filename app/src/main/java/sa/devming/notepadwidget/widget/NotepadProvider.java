@@ -16,7 +16,6 @@ import sa.devming.notepadwidget.db.Notepad;
 import sa.devming.notepadwidget.db.NotepadDbHelper;
 
 public class NotepadProvider extends AppWidgetProvider {
-    public final static String WIDGET_CLICK = "sa.devming.notepadwidget.WIDGET_CLICK";
     public static NotepadDbHelper mDBHelper;
     public final static int [] WIDGET_BACKGROUND
             = { R.drawable.widget_corner_0_yellow, R.drawable.widget_corner_1_black,
@@ -32,20 +31,6 @@ public class NotepadProvider extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
         mDBHelper = new NotepadDbHelper(context);
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (WIDGET_CLICK.equalsIgnoreCase(action)){
-            Intent update = new Intent(context, NotepadProvider.class);
-            update.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-            int ids[] = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, NotepadProvider.class));
-            update.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-            context.sendBroadcast(update);
-        } else {
-            super.onReceive(context, intent);
-        }
     }
 
     @Override
@@ -74,9 +59,7 @@ public class NotepadProvider extends AppWidgetProvider {
 
             //클릭 이벤트 생성 : config 이동 with ID
             Intent intent = new Intent(context, NotepadConfig.class);
-            Bundle bundle = new Bundle();
-            bundle.putInt(NotepadConfig.WIDGET_ID_PARAM, appWidgetId);
-            intent.putExtras(bundle);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
             updateViews.setOnClickPendingIntent(R.id.widgetBody, pendingIntent);
 

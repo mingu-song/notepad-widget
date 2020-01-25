@@ -51,10 +51,10 @@ public class MainListAdapter extends BaseAdapter {
         } else {
             mHolder = new ViewHolder();
             convertView = mLayoutInflater.inflate(R.layout.main_list_item, null);
-            mHolder.itemID = (TextView)convertView.findViewById(R.id.itemID);
-            mHolder.itemColor = (TextView)convertView.findViewById(R.id.itemColor);
-            mHolder.itemBody = (TextView)convertView.findViewById(R.id.itemBody);
-            mHolder.itemColorImg = (ImageView) convertView.findViewById(R.id.itemColorImg);
+            mHolder.itemID = convertView.findViewById(R.id.itemID);
+            mHolder.itemColor = convertView.findViewById(R.id.itemColor);
+            mHolder.itemBody = convertView.findViewById(R.id.itemBody);
+            mHolder.itemColorImg = convertView.findViewById(R.id.itemColorImg);
             convertView.setTag(mHolder);
         }
 

@@ -7,4 +7,5 @@
     <string name="error">Error!! Please restart or reinstall the application.</string>
     <string name="no_widget">There are no widgets. Please make a widget.</string>
     <string name="banner_ad_unit_id" translatable="false">ca-app-pub-8039042765632689/4939840458</string>
+    <string name="admob_app_id" translatable="false">ca-app-pub-8039042765632689~1986374052</string>
 </resources>

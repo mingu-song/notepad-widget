@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.text.util.Linkify;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,17 +14,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.ads.mediation.admob.AdMobAdapter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import sa.devming.notepadwidget.MyMovementMethod;
 import sa.devming.notepadwidget.R;
 import sa.devming.notepadwidget.db.Notepad;
 import sa.devming.notepadwidget.db.NotepadDbHelper;
-
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 public class NotepadConfig extends AppCompatActivity {
     private int mAppWidgetId;
@@ -38,12 +35,10 @@ public class NotepadConfig extends AppCompatActivity {
     private Button   mConfigOK;
     private ImageView mConfigColor;
     private ImageButton mConfigTextSize;
-
-    private int mAppWidgetIdUpdate;
+    private boolean isNew = false;
 
     private int mColor = 0;
     public static int[] TEXT_SIZE_LIST = {18, 20, 23, 26, 29, 32, 35, 40, 15};
-    public static final String WIDGET_ID_PARAM = "WIDGET_ID";
     public static final int [] CONFIG_COLOR = {
             R.drawable.widget_corner_0_yellow, R.drawable.widget_corner_1_black,
             R.drawable.widget_corner_2_white, R.drawable.widget_corner_3_red,
@@ -61,11 +56,11 @@ public class NotepadConfig extends AppCompatActivity {
     }
 
     private void initializeViews() {
-        mConfigHead = (EditText)findViewById(R.id.configHead);
-        mConfigBody = (EditText)findViewById(R.id.configBody);
-        mConfigOK = (Button)findViewById(R.id.configOK);
-        mConfigColor = (ImageView)findViewById(R.id.configColor);
-        mConfigTextSize = (ImageButton) findViewById(R.id.configTextSize);
+        mConfigHead = findViewById(R.id.configHead);
+        mConfigBody = findViewById(R.id.configBody);
+        mConfigOK = findViewById(R.id.configOK);
+        mConfigColor = findViewById(R.id.configColor);
+        mConfigTextSize = findViewById(R.id.configTextSize);
 
         mConfigOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,24 +89,24 @@ public class NotepadConfig extends AppCompatActivity {
 
         mDBHelper = new NotepadDbHelper(this);
         mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-        mAppWidgetIdUpdate = AppWidgetManager.INVALID_APPWIDGET_ID;
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             mAppWidgetId = bundle.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-            mAppWidgetIdUpdate = bundle.getInt(WIDGET_ID_PARAM, AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
-        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID && mAppWidgetIdUpdate == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish();
-        } else if (mAppWidgetIdUpdate != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            //업데이트를 위해 조회
-            if (mDBHelper.existNote(mAppWidgetIdUpdate)) {
-                Notepad notepad = mDBHelper.getNotepad(mAppWidgetIdUpdate);
-                updateNotepad(notepad);
-            }
         } else {
-            newNotepad();
+            //업데이트를 위해 조회
+            if (mDBHelper.existNote(mAppWidgetId)) {
+                isNew = false;
+                Notepad notepad = mDBHelper.getNotepad(mAppWidgetId);
+                updateNotepad(notepad);
+            } else {
+                isNew = true;
+                newNotepad();
+            }
         }
 
         // 20171211 에디터에 클릭 기능 삭제
@@ -182,23 +177,21 @@ public class NotepadConfig extends AppCompatActivity {
         }
 
         //DB insert or update
-        if (mAppWidgetIdUpdate == AppWidgetManager.INVALID_APPWIDGET_ID) {
-            long newId = mDBHelper.addNotepad(new Notepad(mColor, mAppWidgetId, mConfigHead.getText().toString(), mConfigBody.getText().toString(), (int)mConfigTextSize.getTag()));
-            if (newId == -1) {
-                Toast.makeText(this, getString(R.string.error), Toast.LENGTH_LONG).show();
-                return;
-            }
+        long dbId;
+        if (isNew) {
+            dbId = mDBHelper.addNotepad(new Notepad(mColor, mAppWidgetId, mConfigHead.getText().toString(), mConfigBody.getText().toString(), (int)mConfigTextSize.getTag()));
         } else {
-            long updateId = mDBHelper.updateNotepad(new Notepad(mColor, mAppWidgetIdUpdate, mConfigHead.getText().toString(), mConfigBody.getText().toString(), (int)mConfigTextSize.getTag()));
-            if (updateId == -1) {
-                Toast.makeText(this, getString(R.string.error), Toast.LENGTH_LONG).show();
-                return;
-            }
+            dbId = mDBHelper.updateNotepad(new Notepad(mColor, mAppWidgetId, mConfigHead.getText().toString(), mConfigBody.getText().toString(), (int)mConfigTextSize.getTag()));
+
+        }
+        if (dbId == -1) {
+            Toast.makeText(this, getString(R.string.error), Toast.LENGTH_LONG).show();
+            return;
         }
 
         //위젯 업데이트 처리
-        Intent intent = new Intent(NotepadProvider.WIDGET_CLICK);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+        Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE, null, this, NotepadProvider.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] {mAppWidgetId});
         sendBroadcast(intent);
 
         //config 종료
@@ -209,8 +202,12 @@ public class NotepadConfig extends AppCompatActivity {
     }
 
     private void adMob(){
-        AdView mAdView = (AdView)findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdView mAdView = findViewById(R.id.adView);
+        Bundle extras = new Bundle();
+        extras.putString("max_ad_content_rating", "G");
+        AdRequest adRequest = new AdRequest.Builder()
+                .addNetworkExtrasBundle(AdMobAdapter.class, extras)
+                .build();
         mAdView.loadAd(adRequest);
     }
 }

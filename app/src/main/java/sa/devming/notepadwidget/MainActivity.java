@@ -1,5 +1,6 @@
 package sa.devming.notepadwidget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,10 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 Notepad notepad = (Notepad)parent.getItemAtPosition(position);
 
                 Intent intent = new Intent(getApplicationContext(), NotepadConfig.class);
-                Bundle bundle = new Bundle();
-                bundle.putInt(NotepadConfig.WIDGET_ID_PARAM, notepad.getWidgetId());
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, notepad.getWidgetId());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
